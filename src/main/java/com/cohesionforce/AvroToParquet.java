@@ -24,20 +24,47 @@ import parquet.avro.AvroParquetWriter;
 import parquet.hadoop.ParquetWriter;
 import parquet.hadoop.metadata.CompressionCodecName;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FilenameUtils;
 
 public class AvroToParquet {
 	public static void main(String[] args) {
 
-		if (args.length != 1) {
-			System.out.println("Usage: ?>java -jar <jarfile> Filename.avro");
+		String inputFile = null;
+		String outputFile = null;
+		
+		HelpFormatter formatter = new HelpFormatter();
+		// create Options object
+		Options options = new Options();
+
+		// add t option
+		options.addOption("i", true, "input avro file");
+		options.addOption("o", true, "ouptut Parquet file");
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd;
+		try {
+			cmd = parser.parse(options, args);
+			inputFile = cmd.getOptionValue("i");
+			if (inputFile == null) {
+				formatter.printHelp("AvroToParquet", options);
+				return;
+			}
+			outputFile = cmd.getOptionValue("o");
+		} catch (ParseException exc) {
+			System.err.println("Problem with command line parameters: " + exc.getMessage());
 			return;
 		}
 
-		File avroFile = new File(args[0]);
+		File avroFile = new File(inputFile);
 
 		if (!avroFile.exists()) {
-			System.err.println("Could not open file: " + args[0]);
+			System.err.println("Could not open file: " + inputFile);
+			return;
 		}
 		try {
 
@@ -53,9 +80,13 @@ public class AvroToParquet {
 			int blockSize = 256 * 1024 * 1024;
 			int pageSize = 64 * 1024;
 
-			String base = FilenameUtils.removeExtension(avroFile.getAbsolutePath());
+			String base = FilenameUtils.removeExtension(avroFile.getAbsolutePath()) + ".parquet";
+			if(outputFile != null) {
+				File file = new File(outputFile);
+				base = file.getAbsolutePath();
+			}
 			
-			Path outputPath = new Path("file:///"+base+".parquet");
+			Path outputPath = new Path("file:///"+base);
 
 			// the ParquetWriter object that will consume Avro GenericRecords
 			ParquetWriter<GenericRecord> parquetWriter;
