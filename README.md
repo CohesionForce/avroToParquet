@@ -4,6 +4,9 @@ This repository contains a simple command line converter for Apache Avro to Apac
 
 Parquet has an additional dependency that the schema must be a "record" type in Avro.
 
+## Dependencies
+This converter uses Apache Avro v1.7.7, Apache Commons-IO v2.4, and Parquet v1.6.0rc3.  This version of Parquet was chosen to be compatible with Apache Spark v1.4.1, which also uses Parquet v1.6.0rc3. 
+
 ## Building
 
 ?>git clone https://github.com/CohesionForce/avroToParquet.git
