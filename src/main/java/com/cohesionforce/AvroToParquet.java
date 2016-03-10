@@ -44,7 +44,7 @@ public class AvroToParquet {
 
 		// add t option
 		options.addOption("i", true, "input avro file");
-		options.addOption("o", true, "ouptut Parquet file");
+		options.addOption("o", true, "output Parquet file");
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd;
 		try {
